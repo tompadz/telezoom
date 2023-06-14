@@ -12,7 +12,7 @@ public class UserDaoImpl implements UserDao {
 
     public UserDaoImpl() {
         try {
-            String dbPath = "jdbc:sqlite:src/main/resources/data_base/sql";
+            String dbPath = "jdbc:sqlite:src/main/resources/data_base/sql.db";
             connection = DriverManager.getConnection(dbPath);
         } catch (SQLException e) {
             e.printStackTrace();

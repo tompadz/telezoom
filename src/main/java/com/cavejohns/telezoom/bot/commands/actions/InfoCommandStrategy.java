@@ -4,6 +4,8 @@ import com.cavejohns.telezoom.bot.buttons.BotButtons;
 import com.cavejohns.telezoom.bot.commands.BotCommands;
 import com.cavejohns.telezoom.bot.commands_handler.UpdateData;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.webapp.SentWebAppMessage;
+import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 
 public class InfoCommandStrategy implements CommandStrategy {
 

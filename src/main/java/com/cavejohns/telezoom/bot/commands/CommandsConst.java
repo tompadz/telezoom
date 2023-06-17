@@ -21,6 +21,7 @@ public class CommandsConst {
     public static final String LOGIN_ERROR = "Ошибка подключения к базе данных";
 
     /** Create command **/
+    public static final String CREATE_URL = "https://tompadz.github.io/telezoom.github.io/";
     public static final String CREATE_COMMAND = "/create";
     public static final String CREATE_NAME = "Создать встречу";
     public static final String CREATE_INFO = "Создает встречу в zoom";

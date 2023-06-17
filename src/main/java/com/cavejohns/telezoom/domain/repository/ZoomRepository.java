@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface ZoomRepository {
 
-    Response<MeetingDto> createMeeting(String name, List<String> emails);
+    Response<MeetingDto> createMeeting(String name, String startDate, List<String> emails);
 
-    Response<MeetingDto> createMeeting(String name);
+    Response<MeetingDto> createMeeting(String name, String startDate);
 
 }

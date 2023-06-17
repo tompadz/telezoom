@@ -11,6 +11,10 @@ public class MeetingDto {
     private String join_url;
     private String topic;
 
+    private String start_time;
+
+    public String getStart_time() {return start_time;}
+
     public String getTopic() {
         return topic;
     }
@@ -32,6 +36,6 @@ public class MeetingDto {
     }
 
     public Meeting toMeeting() {
-        return new Meeting(id, join_url, topic);
+        return new Meeting(id, join_url, topic, start_time);
     }
 }

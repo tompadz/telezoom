@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface MeetingUseCase {
 
-    public MeetingResult createMeeting(String name, List<String> meetingInvites);
+    public MeetingResult createMeeting(String name, String startDate, List<String> meetingInvites);
 
-    public String createMeeting(String name);
+    public String createMeeting(String name, String startDate);
 
 }

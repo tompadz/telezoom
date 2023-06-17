@@ -26,8 +26,8 @@ public class MeetingUseCaseImpl implements MeetingUseCase {
     }
 
     @Override
-    public String createMeeting(String name) {
-        Response<MeetingDto> result = zoomRepository.createMeeting(name);
+    public String createMeeting(String name, String startDate) {
+        Response<MeetingDto> result = zoomRepository.createMeeting(name, startDate);
         switch (result.getState()) {
             case SUCCESS -> {
                 MeetingDto dto = result.getResult();
@@ -41,28 +41,14 @@ public class MeetingUseCaseImpl implements MeetingUseCase {
         return CREATE_UNKNOWN_ERROR;
     }
 
-    private MeetingResult showError(String message) {
-        return new MeetingResult(null,null,message);
-    }
-
-    private List<User> findUsers(List<String> shortnames) throws SQLException {
-        List<User> users = new ArrayList<>();
-        for (String shortname : shortnames) {
-            UserEntity userDto = userDao.findByShortname(shortname);
-            if (userDto == null) return null;
-            users.add(userDto.toUser());
-        }
-        return users;
-    }
-
     @Override
-    public MeetingResult createMeeting(String name, List<String> shortnames) {
+    public MeetingResult createMeeting(String name, String startDate, List<String> shortnames) {
         try {
             List<User> users = findUsers(shortnames);
             if (users == null) return showError(CREATE_USER_ERROR);
             List<String> emails = users.stream().map(User::getEmail).toList();
             List<Long> ids = users.stream().map(User::getChatId).toList();
-            Response<MeetingDto> result = zoomRepository.createMeeting(name, emails);
+            Response<MeetingDto> result = zoomRepository.createMeeting(name, startDate, emails);
 
             switch (result.getState()) {
                 case SUCCESS -> {
@@ -84,4 +70,19 @@ public class MeetingUseCaseImpl implements MeetingUseCase {
             return showError(CREATE_UNKNOWN_ERROR);
         }
     }
+
+    private MeetingResult showError(String message) {
+        return new MeetingResult(null,null,message);
+    }
+
+    private List<User> findUsers(List<String> shortnames) throws SQLException {
+        List<User> users = new ArrayList<>();
+        for (String shortname : shortnames) {
+            UserEntity userDto = userDao.findByShortname(shortname);
+            if (userDto == null) return null;
+            users.add(userDto.toUser());
+        }
+        return users;
+    }
+
 }

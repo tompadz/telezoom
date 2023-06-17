@@ -27,7 +27,7 @@ public class ZoomRepositoryImpl implements ZoomRepository, ZoomApi {
     }
 
     @Override
-    public Response<MeetingDto> createMeeting(String name, List<String> emails) {
+    public Response<MeetingDto> createMeeting(String name, String startDate, List<String> emails) {
         CreateMeetingRequest requestBody = new CreateMeetingRequest();
         MeetingSettingsRequest settingsRequest = new MeetingSettingsRequest();
         List<MeetingInvitees> meetingInvitees = new ArrayList<>();
@@ -40,16 +40,18 @@ public class ZoomRepositoryImpl implements ZoomRepository, ZoomApi {
         settingsRequest.setMeeting_invitees(meetingInvitees);
         requestBody.setSettings(settingsRequest);
         requestBody.setTopic(name);
+        requestBody.setStart_time(startDate);
         return createZoomMeeting(requestBody).execute();
     }
 
     @Override
-    public Response<MeetingDto> createMeeting(String name) {
+    public Response<MeetingDto> createMeeting(String name, String startDate) {
         CreateMeetingRequest requestBody = new CreateMeetingRequest();
         MeetingSettingsRequest settingsRequest = new MeetingSettingsRequest();
         settingsRequest.setJoin_before_host(true);
         requestBody.setSettings(settingsRequest);
         requestBody.setTopic(name);
+        requestBody.setStart_time(startDate);
         return createZoomMeeting(requestBody).execute();
     }
 

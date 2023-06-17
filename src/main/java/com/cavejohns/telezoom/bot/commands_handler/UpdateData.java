@@ -11,6 +11,16 @@ public class UpdateData {
     private final User user;
     private final TelegramZoomBot bot;
     private final String commandText;
+    private final String webData;
+
+    public UpdateData(Update update, Long charId, User user, TelegramZoomBot bot, String commandText, String webData) {
+        this.update = update;
+        this.chatId = charId;
+        this.user = user;
+        this.bot = bot;
+        this.commandText = commandText;
+        this.webData = webData;
+    }
 
     public UpdateData(Update update, Long charId, User user, TelegramZoomBot bot, String commandText) {
         this.update = update;
@@ -18,7 +28,10 @@ public class UpdateData {
         this.user = user;
         this.bot = bot;
         this.commandText = commandText;
+        this.webData = null;
     }
+
+    public String getWebData() { return webData; }
 
     public Update getUpdate() {
         return update;

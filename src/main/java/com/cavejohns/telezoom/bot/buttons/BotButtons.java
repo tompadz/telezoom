@@ -1,30 +1,40 @@
 package com.cavejohns.telezoom.bot.buttons;
 
 import com.cavejohns.telezoom.bot.commands.BotCommands;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 
+import static com.cavejohns.telezoom.bot.commands.CommandsConst.CREATE_URL;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class BotButtons implements BotCommands {
 
-    public static InlineKeyboardMarkup inlineMarkup() {
-        InlineKeyboardButton createButton = new InlineKeyboardButton(CREATE.getName());
-        createButton.setCallbackData(CREATE.getCommand());
+    public static ReplyKeyboardMarkup inlineMarkup() {
 
-        InlineKeyboardButton infoButton = new InlineKeyboardButton(INFO.getName());
-        infoButton.setCallbackData(INFO.getCommand());
+        KeyboardButton createButton = new KeyboardButton(CREATE.getName());
+        WebAppInfo webAppInfo = WebAppInfo.builder().url(CREATE_URL).build();
+        createButton.setWebApp(webAppInfo);
 
-        InlineKeyboardButton loginButton = new InlineKeyboardButton(LOGIN.getName());
-        loginButton.setCallbackData(LOGIN.getCommand());
+        KeyboardButton infoButton = new KeyboardButton(INFO.getCommand());
+        KeyboardButton loginButton = new KeyboardButton(LOGIN.getCommand());
 
-        List<InlineKeyboardButton> rowInline = List.of(createButton, infoButton);
-        List<InlineKeyboardButton> authLine = List.of(loginButton);
-        List<List<InlineKeyboardButton>> rowsInLine = List.of(rowInline, authLine);
+        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
 
-        InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-        markupInline.setKeyboard(rowsInLine);
+        KeyboardRow row = new KeyboardRow();
+        row.add(createButton);
+        keyboard.add(row);
 
-        return markupInline;
+        row = new KeyboardRow();
+        row.add(infoButton);
+        row.add(loginButton);
+        keyboard.add(row);
+
+        markup.setKeyboard(keyboard);
+        return markup;
     }
 }

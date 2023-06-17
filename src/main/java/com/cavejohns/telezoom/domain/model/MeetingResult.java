@@ -31,6 +31,7 @@ public class MeetingResult {
         StringJoiner joiner = new StringJoiner("\n");
         joiner.add("Организация \"Solit Clouds\" приглашает вас на конференцию Zoom!");
         joiner.add("\nНазвание встречи: " + meeting.getName());
+        joiner.add("дата встречи: " + meeting.getDateTimeMessage() + "\n");
         joiner.add(meeting.getMessageText());
         return joiner.toString();
     }

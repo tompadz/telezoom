@@ -1,11 +1,173 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="Ru">
 <head>
-    <script src="https://telegram.org/js/telegram-web-app.js?1"></script>
-    <title>Getting Started: Serving Web Content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <title></title>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--tg-theme-text-color, #000);
+            background: var(--tg-theme-bg-color, #fff);
+            font-size: 18px;
+            padding: 16px;
+        }
+
+        @media (max-width: 768px) {
+            input[type="date"]::-webkit-inner-spin-button,
+            input[type="date"]::-webkit-calendar-picker-indicator {
+                display: none;
+                -webkit-appearance: none;
+            }
+
+            input[type="time"]::-webkit-inner-spin-button,
+            input[type="time"]::-webkit-calendar-picker-indicator {
+                display: none;
+                -webkit-appearance: none;
+            }
+        }
+
+        .input_container {
+            width: 100%;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+
+        .input_label {
+            font-size: 12px;
+            color: var(--tg-theme-hint-color, #8B8E98);
+            font-weight: 600;
+        }
+
+        .input_helper {
+            font-size: 10px;
+            margin: 5px;
+            color: var(--tg-theme-hint-color, #8B8E98);
+        }
+
+        .input_field {
+            width: auto;
+            height: 40px;
+            flex-grow: 1;
+            color: var(--tg-theme-text-color, #000);
+            padding: 0 16px 0 16px;
+            border-radius: 9px;
+            outline: none;
+            background-color: var(--tg-theme-secondary-bg-color, #05060f0a);
+            border: 1px solid #e5e5e500;
+            transition: all 0.3s cubic-bezier(0.15, 0.83, 0.66, 1);
+        }
+
+        #date_field {
+            margin-right: 16px; /* Задайте желаемый отступ справа */
+        }
+
+        .split {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .input_field:focus {
+            border: 1px solid transparent;
+            box-shadow: 0 0 0 2px var(--tg-theme-button-color, #50a8eb);
+        }
+
+        .version {
+            color: var(--tg-theme-hint-color, #8B8E98);
+            opacity: 30%;
+            font-size: 10px;
+        }
+    </style>
 </head>
+
 <body>
-<p>Hello world</p>
+<section class="content">
+
+    <div class="input_container">
+        <label for="name_field" class="input_label">Название встречи</label>
+        <input id="name_field" class="input_field" type="text" name="input-name" title="Inpit title" placeholder="zoom meeting">
+        <p class="input_helper">Если поле пустое, название будет выбрано автоматически</p>
+    </div>
+
+    <div class="input_container">
+        <label for="date_field" class="input_label">Дата и время встречи</label>
+        <div class="split">
+            <input id="date_field" class="input_field" type="date" name="input-name">
+            <input id="time_field" class="input_field" type="time" name="time">
+        </div>
+        <p class="input_helper">Если поле пустое, дата и время будет выбраны автоматически</p>
+    </div>
+
+
+    <div class="input_container">
+        <label for="users_field" class="input_label">Приглашенные пользователи</label>
+        <input id="users_field" class="input_field" type="text" name="input-name" title="Inpit title" placeholder="@dapadz @durov">
+        <p class="input_helper">Если поле пустое, доступ будет открыт всем у кого есть ссылка. <br>Пользователь должен быть авторизован в боте</p>
+    </div>
+
+
+    <p class="version">version: 1.8</p>
+
+</section>
+
+<script>
+
+    let tg = window.Telegram.WebApp;
+
+    tg.MainButton.text = "Создать встречу";
+    tg.MainButton.isVisible = true;
+    tg.MainButton.show();
+
+    let currentDate = new Date();
+    let currentDateString = currentDate.toISOString().slice(0, 10);
+    let currentTimeString = currentDate.toTimeString().slice(0, 5);
+
+    document.getElementById("date_field").value = currentDateString;
+    document.getElementById("time_field").value = currentTimeString;
+
+    Telegram.WebApp.onEvent('mainButtonClicked', function(){
+
+        let name = document.getElementById("name_field").value || null;
+        let users = document.getElementById("users_field").value || null;
+        let date = document.getElementById("date_field").value;
+        let time = document.getElementById("time_field").value;
+
+        let currentDateTime = currentDate.toISOString().slice(0, 19) + 'Z';
+
+        let dateTime = date && time ? `${date}T${time}:00Z` : currentDateTime;
+        let usersArray = users ? users.split(/\s+/).map(user => user.replace(/^@/, '')) : null;
+
+        let data = JSON.stringify({
+            type: "create",
+            data: {
+                name: name,
+                startDate: dateTime,
+                users: usersArray
+            }
+        });
+
+        tg.sendData(data);
+        tg.close();
+    });
+
+    tg.ready();
+
+</script>
+
 </body>
 </html>

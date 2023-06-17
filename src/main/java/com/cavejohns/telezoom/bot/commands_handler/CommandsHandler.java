@@ -7,6 +7,8 @@ import com.cavejohns.telezoom.bot.commands.CustomBotCommand;
 import com.cavejohns.telezoom.domain.repository.AuthRepository;
 import com.cavejohns.telezoom.domain.use_case.MeetingUseCase;
 import com.cavejohns.telezoom.utils.Log;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -54,8 +56,27 @@ public class CommandsHandler implements BotHandler {
             handleButtonUpdate(bot, update);
         }
         if (update.hasMessage()) {
-            handleMessageUpdate(bot, update);
+            boolean isWebMessage = update.getMessage().getWebAppData() != null;
+            if (isWebMessage) {
+                handleWebUpdate(bot, update);
+            }else {
+                handleMessageUpdate(bot, update);
+            }
         }
+    }
+
+    /**
+     * Метод handleWebUpdate обрабатывает обновление из веб приложения.
+     * @param bot - экземпляр TelegramZoomBot
+     * @param update - объект Update, содержащий информацию об обновлении
+     */
+    private void handleWebUpdate(TelegramZoomBot bot, Update update) {
+        Long chatId = update.getMessage().getChatId();
+        User user = update.getMessage().getFrom();
+        String webData = update.getMessage().getWebAppData().getData();
+        Log.i("TEST_WEB_REQUEST", webData);
+        UpdateData data = new UpdateData(update, chatId, user, bot, null, webData);
+        handleCommand(data);
     }
 
     /**
@@ -67,13 +88,7 @@ public class CommandsHandler implements BotHandler {
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         String buttonCallback = update.getCallbackQuery().getData();
         User user = update.getCallbackQuery().getFrom();
-        UpdateData data = new UpdateData(
-                update,
-                chatId,
-                user,
-                bot,
-                buttonCallback
-        );
+        UpdateData data = new UpdateData(update, chatId, user, bot, buttonCallback);
         handleCommand(data);
     }
 
@@ -86,13 +101,7 @@ public class CommandsHandler implements BotHandler {
         Long chatId = update.getMessage().getChatId();
         String commandText = update.getMessage().getText();
         User user = update.getMessage().getFrom();
-        UpdateData data = new UpdateData(
-                update,
-                chatId,
-                user,
-                bot,
-                commandText
-        );
+        UpdateData data = new UpdateData(update, chatId, user, bot, commandText);
         handleCommand(data);
     }
 
@@ -100,6 +109,36 @@ public class CommandsHandler implements BotHandler {
      * Метод handleCommand обрабатывает команду.
      */
     private void handleCommand(UpdateData data) {
+        if (data.getWebData() != null) {
+            handleCommandWeb(data);
+        }else {
+            handleCommandText(data);
+        }
+    }
+
+    /**
+     * Метод handleCommandText обрабатывает команды из веб приложения.
+     */
+    private void handleCommandWeb(UpdateData data) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(data.getWebData());
+            String type = jsonNode.path("type").asText();
+            CommandStrategy commandAction = findStrategy(type);
+            if (commandAction != null) {
+                commandAction.execute(data);
+            }else {
+                logUnknownError(data.getCommandText());
+            }
+        }catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+    }
+
+    /**
+     * Метод handleCommandText обрабатывает текстовые команды.
+     */
+    private void handleCommandText(UpdateData data) {
         CommandStrategy commandAction = findStrategy(data.getCommandText());
         if (commandAction != null) {
             commandAction.execute(data);
